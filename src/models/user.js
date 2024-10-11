@@ -69,6 +69,17 @@ module.exports = (sequelize, DataTypes) => {
       return userRole ? true : false;
     }
 
+    async role(){
+      const userRole = await sequelize.models.UserRoles.findOne({
+        where:{userId:this.id},
+        include:[{
+          model:sequelize.models.Role,
+          attributes:['role_name']
+        }]
+      });
+      return userRole && userRole.Role ? userRole.Role.role_name : null;
+    }
+
   }
   User.init({
     firstname: DataTypes.STRING,

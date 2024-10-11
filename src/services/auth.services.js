@@ -1,5 +1,4 @@
 const { User, Role, sequelize } = require("../models/");
-const Sequelize = require('sequelize')
 const bcryptjs = require("bcryptjs");
 const apiError = require("../utils/apiError.js");
 const { generateToken } = require("../utils/tokens.js");
@@ -34,7 +33,12 @@ class AuthService {
             if (!isMatch) {
                 throw apiError("Invalid login credentials", 403)
             }
-            const token = generateToken({ userId: user.id })
+
+            // generate token
+            const token = generateToken({
+                userId: user.id,
+                role: await user.role()
+            });
             return { user, token }
         } catch (error) {
             throw error
@@ -42,5 +46,5 @@ class AuthService {
     }
 
 }
-const authService = new AuthService();
-module.exports = authService;
+
+module.exports = new  AuthService();
