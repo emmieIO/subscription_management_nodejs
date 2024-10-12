@@ -17,9 +17,9 @@ class PaymentService {
         }
     }
 
-    async subscribe(data){
+    async intializePayment(data){
         try{
-            const subscribe = await this.paystackApi.makeRequest("POST", "/subscription",data);
+            const subscribe = await this.paystackApi.makeRequest("POST", "/initialize",data);
             return subscribe
         }catch(e){
             throw e;

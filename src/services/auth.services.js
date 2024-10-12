@@ -2,9 +2,11 @@ const { User, Role, sequelize } = require("../models/");
 const bcryptjs = require("bcryptjs");
 const apiError = require("../utils/apiError.js");
 const { generateToken } = require("../utils/tokens.js");
+const customerProcessQueue = require("../jobs/processCustomerqueue.js");
 
 
 class AuthService {
+ 
     async createUser(data) {
         const transaction = await sequelize.transaction()
         try {
@@ -15,6 +17,7 @@ class AuthService {
             });
             await user.assignRole('free_user', { transaction });
             await transaction.commit();
+            customerProcessQueue.add({id:user.id})
             return user;
         } catch (error) {
             await transaction.rollback();
@@ -43,6 +46,12 @@ class AuthService {
         } catch (error) {
             throw error
         }
+    }
+
+    async updateCustomerId(user, options={}){
+        const customerResponse = await this.customerService.createCustomer(user)
+            user.customer_id = customerResponse.data.customer_code;
+            await user.save({ transaction:options.transaction });
     }
 
 }

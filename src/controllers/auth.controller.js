@@ -20,6 +20,7 @@ class Authenthication {
             const user = await AuthService.createUser(req.body)
             return success(res, user,"user registration successful", 201);
         } catch (error) {
+            console.log(error);
             next(error);
         }
     }

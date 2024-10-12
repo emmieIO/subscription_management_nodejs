@@ -17,6 +17,16 @@ class SubscriptionService {
             throw e
         }
     }
+
+    async subscribe(data){
+        try{
+            const response = await paymentService.intializePayment(data);
+            return response;
+
+        }catch(e){
+            throw e
+        }
+    }
 }
 
 module.exports = new SubscriptionService();
