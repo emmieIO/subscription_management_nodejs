@@ -2,11 +2,11 @@ const paystackApi = require("../utils/paystack");
 
 class PaymentService {
     constructor() {
-        this.paystackApi = paystackApi;
+        this.paymentGateway = paystackApi;
         }
     async createPaymentPlan(data){
         try{
-            const create_plan = await this.paystackApi.makeRequest(
+            const create_plan = await this.paymentGateway.makeRequest(
                 "post",
                 "/plan",
                 data
@@ -17,15 +17,20 @@ class PaymentService {
         }
     }
 
-    async intializePayment(data){
+    async subscribe(data){
         try{
-            const subscribe = await this.paystackApi.makeRequest("POST", "/initialize",data);
-            return subscribe
+            const subscription = await this.paymentGateway.makeRequest(
+                "post",
+                "/subscription",
+                data
+            )
+            return subscription
         }catch(e){
             throw e;
         }
-
     }
+
+
 }
 
-module.exports = new PaymentService();
+module.exports = PaymentService;
