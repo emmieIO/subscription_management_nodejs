@@ -1,6 +1,6 @@
 const Queue = require('bull');
 const webhookQueue = new Queue("webhookQueue");
-const {User} = require('../models/');
+const {User, WebhookEvent} = require('../models/');
 const { sendEmail } = require('../utils/mailer/mail');
 webhookQueue.process(async(job,done)=>{
     try{
@@ -53,13 +53,19 @@ webhookQueue.process(async(job,done)=>{
                 // send a reminder of payment failed / revert user role
                 customer.assignRole('free_user')
                 sendEmail(
-                    
+                    customer.email,
+                    "Payment Failed",
+                    "Your payment for the subscription has failed. Please update your payment method",
                 )
                 break;
 
                 default:
                     console.log(`Unhandled event: ${res.event}`);
         }
+        await WebhookEvent.create({
+            event: res.event,
+            payload: res,
+        })
         done()
     }catch(e){
         console.error("Error processing job:", e.message);

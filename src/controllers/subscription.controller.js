@@ -9,9 +9,8 @@ class SubscriptionController {
         try{
             const { userId } = req.user;
             const { planId } = req.body;
-            console.log(planId);
             const subscription = await SubscriptionServices.subscribe({ userId, planId });
-            return subscription;
+            res.json(subscription).status(201);
         }catch(e){
             next(e)
         }

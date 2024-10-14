@@ -1,6 +1,6 @@
 const subscriptionService = require("../services/subscription.services")
 const {User} = require("../models")
-const {apiError} = require("../utils/apiError")
+const apiError = require("../utils/apiError")
 class UserService {
     constructor() {
         this.subscriptionService = subscriptionService
