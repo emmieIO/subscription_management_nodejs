@@ -2,7 +2,7 @@ const Queue = require('bull');
 const webhookQueue = new Queue("webhookQueue");
 const {User} = require('../models/');
 const { sendEmail } = require('../utils/mailer/mail');
-webhookQueue.process(async(job)=>{
+webhookQueue.process(async(job,done)=>{
     try{
         const res = job.data
         customer_code = res.data.customer.customer_code
@@ -43,18 +43,27 @@ webhookQueue.process(async(job)=>{
             case 'invoice.created':
                  // Handle invoice created event (e.g., send renewal reminder)
                 // This could be handled with additional functionality
+                sendEmail(
+                    customer.email,
+                    "Renewal Reminder",
+                    "Your subscription is about to expire and your card will be charged in 3days time",
+                );
                 break;
             case "invoice.payment_failed":
                 // send a reminder of payment failed / revert user role
                 customer.assignRole('free_user')
+                sendEmail(
+                    
+                )
                 break;
 
                 default:
                     console.log(`Unhandled event: ${res.event}`);
         }
+        done()
     }catch(e){
         console.error("Error processing job:", e.message);
-        throw e
+        done(e)
     }
 
 

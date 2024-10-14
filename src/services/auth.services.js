@@ -6,7 +6,7 @@ const customerProcessQueue = require("../jobs/processCustomerqueue.js");
 
 
 class AuthService {
- 
+
     async createUser(data) {
         const transaction = await sequelize.transaction()
         try {

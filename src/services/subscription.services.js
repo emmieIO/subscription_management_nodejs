@@ -1,7 +1,9 @@
-const {Plan} = require("../models");
+const {Plan, Subscription} = require("../models");
 const paymentService = require("./payment.service");
 const userService = require("./user.services")
-const planService = require("./plan.service")
+const planService = require("./plan.service");
+const logSubscriptionQueue = require("../jobs/logSubcriptionQueue");
+
 
 
 class SubscriptionService {
@@ -31,12 +33,11 @@ class SubscriptionService {
             const {userId, planId} = data
             const user = await this.userService.getAuthenticatedUser(userId)
             const plan = await this.planService.getPlansByPlanCode(planId)
-            const response = await this.paymentService.subscribe({
-                customer: user.customer_id,
-                plan: plan.plan_code
-            });
-            return response;
-
+            logSubscriptionQueue.add({
+                customer_code:user.customer_id,
+                plan_code:plan.id
+            })
+            return true;
         }catch(e){
             console.error('Error subscribing user:', e);
             throw e
