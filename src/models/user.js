@@ -1,5 +1,5 @@
 'use strict';
-const {Model} = require('sequelize');
+const { Model } = require('sequelize');
 
 
 module.exports = (sequelize, DataTypes) => {
@@ -11,73 +11,98 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      User.belongsToMany(models.Role,{
+      User.belongsToMany(models.Role, {
         through: 'UserRoles',
         foreignKey: 'userId',
-        as:'roles'
+        as: 'roles'
       })
     }
 
-    async assignRole(role_name, options={}) {
+    async assignRole(role_name, options = {}) {
       // roles look up
-      const role = await sequelize.models.Role.findOne({ where: {
-        role_name: role_name
-      },
-      transaction : options.transaction
-    });
-       // Check if role lookup was successful
-      if (!role) {
-        console.error(`Role ${role_name} not found`);
-        throw new Error('Role not found');
-      }
-       // Check if user has role exists
-      const existingRole = await sequelize.models.UserRoles.findOne({
+      const role = await sequelize.models.Role.findOne({
         where: {
-          userId: this.id,
-          roleId: role.id,
+          role_name: role_name
         },
         transaction: options.transaction
       });
-      console.log("an existing role", existingRole);
-      
-      if (existingRole) {
-        console.log("Role already assigned");
-        return;
+      // Check if role lookup was successful
+      if (!role) {
+        throw new Error('Role not found');
       }
-       // Before assigning new role
+      // Check if user has role exists
+      const existingRole = await sequelize.models.UserRoles.findOne({
+        where: {
+          userId: this.id,
+        },
+        transaction: options.transaction
+      });
 
-      const newRole = await sequelize.models.UserRoles.create({
+
+      if (existingRole) {
+        existingRole.roleId = role.id
+        await existingRole.save({ transaction: options.transaction });
+        return true;
+      }
+      // Before assigning new role
+      await sequelize.models.UserRoles.create({
         userId: this.id,
         roleId: role.id,
-      },{ transaction: options.transaction });
-
-      console.log("role assigned");
-      
+      }, { transaction: options.transaction });
+      return true;
     }
 
-    async hasRole(role_name){
-      const role = await this.sequelize.Role.findOne({where:{name:role_name}})
-      if(!role){
-        throw new Error('Role not found')
-      }
-      const userRole = await this.sequelize.UserRole.findOne({
-        where:{
-        userId:this.id,
-        roleId:role.id
-      }
-      })
-      return userRole ? true : false;
-    }
+    async hasRole(role_name) {
+      const role = await sequelize.models.Role.findOne({
+        where: { role_name: role_name }
+      });
 
-    async role(){
+      if (!role) {
+        throw new Error('Role not found');
+      }
+
+      // Check if the user has this role
       const userRole = await sequelize.models.UserRoles.findOne({
-        where:{userId:this.id},
-        include:[{
-          model:sequelize.models.Role,
-          attributes:['role_name']
+        where: { userId: this.id, roleId: role.id }
+      });
+
+      return !!userRole; 
+    }
+
+    async role() {
+      const userRole = await sequelize.models.UserRoles.findOne({
+        where: { userId: this.id },
+        include: [{
+          model: sequelize.models.Role,
+          attributes: ['role_name']
         }]
       });
       return userRole && userRole.Role ? userRole.Role.role_name : null;
+    }
+
+    async removeRole(role_name) {
+      // check user current role
+      const userRole = await this.sequelize.UserRoles.findOne(
+        {
+          where: {
+            userId: this.id
+          },
+          include: [
+            {
+              model: sequelize.models.Role,
+              attributes: ['role_name']
+            }
+          ]
+        });
+      if (!userRole) {
+        throw new Error('User has no role assigned')
+      }
+      // check if role match the role_name
+      if (userRole.Role.role_name !== role_name) {
+        throw new Error(`Role mismatch: expected ${role_name}, found ${userRole.Role.role_name}`)
+      }
+      // remove user role
+      await userRole.destroy()
     }
 
   }
@@ -85,8 +110,8 @@ module.exports = (sequelize, DataTypes) => {
     firstname: DataTypes.STRING,
     lastname: DataTypes.STRING,
     email: DataTypes.STRING,
-    password: DataTypes.INTEGER,
-    customer_id:DataTypes.STRING
+    password: DataTypes.STRING,
+    customer_id: DataTypes.STRING
   }, {
     sequelize,
     modelName: 'User',

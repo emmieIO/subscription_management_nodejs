@@ -11,6 +11,9 @@ router.use('/auth', authV1Router);
 router.use('/premium',[authorize, premium_user], premiumRouter);
 router.use('/admin/plans',planRouter );
 router.use('/user', userRouter)
+router.post("/webook", (req, res, next)=>{
+    
+})
 
 
 module.exports = router;

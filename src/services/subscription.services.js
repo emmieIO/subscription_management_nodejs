@@ -3,6 +3,7 @@ const paymentService = require("./payment.service");
 const userService = require("./user.services")
 const planService = require("./plan.service")
 const crypto = require("crypto")
+const secret = process.env.PAYSTACK_SECRET_KEY
 class SubscriptionService {
     constructor(){
         this.paymentService = new paymentService();
@@ -43,7 +44,11 @@ class SubscriptionService {
     }
 
     webhook(){
-
+        const hash = crypto.createHmac('sha512', secret).update(JSON.stringify(req.body)).digest('hex');
+        if(hash !== req.headers['x-paystack-signature']) {
+            return res.status(401).json({error: 'Invalid signature'})
+        }
+        const event = req.body;
     }
 
 
