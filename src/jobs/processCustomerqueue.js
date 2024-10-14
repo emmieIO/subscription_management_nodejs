@@ -1,6 +1,7 @@
 const Queue = require("bull")
 const {User} = require("../models/")
 const customerServices = require("../services/customer.services.js")
+const { sendEmail } = require("../utils/mailer/mail.js")
 const customerProcessQueue = new Queue("customerQueue")
 
 

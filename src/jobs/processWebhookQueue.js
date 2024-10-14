@@ -1,7 +1,7 @@
 const Queue = require('bull');
 const webhookQueue = new Queue("webhookQueue");
-const {User} = require('../models/')
-
+const {User} = require('../models/');
+const { sendEmail } = require('../utils/mailer/mail');
 webhookQueue.process(async(job)=>{
     try{
         const res = job.data
@@ -14,16 +14,31 @@ webhookQueue.process(async(job)=>{
         switch(res.event){
             case "charge.success":
                 await customer.assignRole('premium_user');
+                sendEmail(
+                    customer.email,
+                    "Account Upgrade",
+                    "Your account has been upgraded to premium",
+                );
                 break;
 
             case 'subscription.create':
                 // assign premium role to user
-                await customer.assignRole('premium_user')
+                await customer.assignRole('premium_user');
+                sendEmail(
+                    customer.email,
+                    "Account Upgrade",
+                    "Your Subscription to premuim was successful",
+                )
                 break;
 
             case "subscription.disable":
                 // remove premium role from user
                 await customer.assignRole('free_user')
+                sendEmail(
+                    customer.email,
+                    "Account Downgrade",
+                    "Your Subscription to premuim was cancelled",
+                )
 
             case 'invoice.created':
                  // Handle invoice created event (e.g., send renewal reminder)
@@ -33,7 +48,7 @@ webhookQueue.process(async(job)=>{
                 // send a reminder of payment failed / revert user role
                 customer.assignRole('free_user')
                 break;
-                
+
                 default:
                     console.log(`Unhandled event: ${res.event}`);
         }
