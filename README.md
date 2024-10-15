@@ -8,7 +8,7 @@ This is a nodejs api project tha consumes the paystack subscriptions api using a
 while this mini project is a work in progress it gives a solid foundation of how most platforms manage subscriptions, ranging from streaming platforms to so many other applications
 that require subscription of some sought.
 
- ##Requirement
+##Requirement
  * NodeJS -> v22.6.0
  * A workiing paystack account
  * A running redis server
@@ -21,23 +21,23 @@ that require subscription of some sought.
     git clone https://github.com/emmieIO/subscription_management_nodejs
     
     `````
- 2. then install necessary modules
+* then install necessary modules
     ````
     cd subscription_management_nodejs
     
     npm install
     ````
- 4. after that rename the env.example to .env
+ * after that rename the env.example to .env
     ````
     
     cp .env.example .env
     
     ````
-5. Seed the database with stock data
+* Seed the database with stock data
    ````
    npm run db:fresh
    ````
-6. Finally let's run our project
+* Finally let's run our project
    ````
    npm run dev
    ````
