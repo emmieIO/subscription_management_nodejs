@@ -11,7 +11,8 @@ that require subscription of some sought.
 ##Requirement
  * NodeJS -> v22.6.0
  * A workiing paystack account
- * A running redis server
+ * A running redis 
+ * mysql database (for production)
 
    # Setup Environment
 
