@@ -1,6 +1,6 @@
 # Project setup
 
-##Introduction 
+##Introduction
 This is a nodejs api project tha consumes the paystack subscriptions api using axios, the mini project comsumes important parts of the paytack subscription api like;
 * customer creation
 * plan creations
@@ -17,21 +17,21 @@ that require subscription of some sought.
 
  * Let's clone the repo with the snippet below.
     ````
-    
+
     git clone https://github.com/emmieIO/subscription_management_nodejs
-    
+
     `````
 * then install necessary modules
     ````
     cd subscription_management_nodejs
-    
+
     npm install
     ````
  * after that rename the env.example to .env
     ````
-    
+
     cp .env.example .env
-    
+
     ````
 * Seed the database with stock data
    ````
