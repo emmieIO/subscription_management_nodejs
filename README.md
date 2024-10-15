@@ -5,7 +5,7 @@ This is a nodejs api project tha consumes the paystack subscriptions api using a
 * customer creation
 * plan creations
 * subscription creation and webhook handling
-while this mini project is a work in progress it gives a solid foundation of how most platforms manage subscriptions, ranging from streaming platforms to so many other applications
+while this mini project is a work in progress it gives a solid foundation on how most platforms manage subscriptions, ranging from streaming platforms to so many other applications
 that require subscription of some sought.
 
 ##Requirement
